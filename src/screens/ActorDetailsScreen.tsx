@@ -38,7 +38,6 @@ const ActorDetailsScreen = ({route}) => {
           <Text>{celeb.name}</Text>
           <Text>Known for playing in: {movies[0].movie}</Text>
           <Text>Release Date: {movies[0].year}</Text>
-          <Text>Gender: {celeb.gender}</Text>
         </View>
       </View>
     </View>

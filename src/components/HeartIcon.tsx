@@ -14,7 +14,7 @@ const HeartIcon = ({liked = false}) => {
 
   useEffect(() => {
     if (liked) {
-      scale.value = withSpring(1.2);
+      scale.value = withSpring(1.4);
     } else {
       scale.value = withSpring(1);
     }
