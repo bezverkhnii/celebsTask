@@ -1,16 +1,20 @@
 import React, {useMemo, useState} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
-import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {
+  Directions,
+  Gesture,
+  GestureDetector,
+} from 'react-native-gesture-handler';
+import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated';
 import HeartIcon from './HeartIcon';
 import OpacityPressable from './OpacityPressable';
 import {useNavigation} from '@react-navigation/native';
-
-const END_POSITION = 200;
 
 const CelebTab = ({celeb}) => {
   const imageUrl = celeb.profile_path;
@@ -18,30 +22,42 @@ const CelebTab = ({celeb}) => {
   const navigation = useNavigation();
   const [liked, setLiked] = useState(false);
 
-  const onLeft = useSharedValue(true);
+  const handleDislike = () => {
+    console.log('disliked');
+    setLiked(false);
+  };
+
+  const handleLike = () => {
+    console.log('liked');
+    setLiked(true);
+  };
+
   const position = useSharedValue(0);
-  const panGesture = Gesture.Pan()
-    .onUpdate(e => {
-      if (onLeft.value) {
-        position.value = e.translationX;
-      } else {
-        position.value = END_POSITION + e.translationX;
-      }
+  const dislikeGesture = Gesture.Fling()
+    .direction(Directions.RIGHT)
+    .onStart(() => {
+      'worklet';
+      runOnJS(handleDislike)();
     })
-    .onEnd(e => {
-      if (position.value > END_POSITION / 2) {
-        position.value = withTiming(END_POSITION, {duration: 100});
-        onLeft.value = false;
-      } else {
-        position.value = withTiming(0, {duration: 100});
-        onLeft.value = true;
-      }
+    .onEnd((event, ctx) => {
+      position.value = withSpring(0);
     });
+
+  const likeGesture = Gesture.Fling()
+    .direction(Directions.LEFT)
+    .onStart(() => {
+      'worklet';
+      runOnJS(handleLike)();
+    })
+    .onEnd((event, ctx) => {
+      position.value = withSpring(0);
+    });
+
+  const composed = Gesture.Simultaneous(likeGesture, dislikeGesture);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{translateX: position.value}],
   }));
-
   const handlePress = () => {
     navigation.navigate('ActorDetails', {
       celebrity: celeb,
@@ -62,23 +78,24 @@ const CelebTab = ({celeb}) => {
   }, [celeb.gender]);
 
   return (
-    // <GestureDetector gesture={panGesture}>
-    <OpacityPressable onPress={handlePress}>
-      <View style={[styles.container, {backgroundColor: color}]}>
-        <View>
-          <Image source={{uri: imagePath}} width={100} height={100} />
-        </View>
-        <View style={styles.actorInfo}>
-          <Text style={styles.name}>{celeb.name}</Text>
-          <Text>Department: {celeb.name}</Text>
-          <Text>Gender: {celeb.gender}</Text>
-        </View>
-        <View style={{paddingRight: 30}}>
-          <HeartIcon liked={true} />
-        </View>
-      </View>
-    </OpacityPressable>
-    // </GestureDetector>
+    <GestureDetector gesture={composed}>
+      <OpacityPressable onPress={handlePress}>
+        <Animated.View
+          style={[styles.container, {backgroundColor: color}, animatedStyle]}>
+          <View>
+            <Image source={{uri: imagePath}} width={100} height={100} />
+          </View>
+          <View style={styles.actorInfo}>
+            <Text style={styles.name}>{celeb.name}</Text>
+            <Text>Department: {celeb.known_for_department}</Text>
+            <Text>Gender: {celeb.gender}</Text>
+          </View>
+          <View style={{paddingRight: 30}}>
+            <HeartIcon liked={liked} />
+          </View>
+        </Animated.View>
+      </OpacityPressable>
+    </GestureDetector>
   );
 };
 

@@ -22,7 +22,9 @@ const HomeScreen = () => {
           keyExtractor={item => item.id}
           renderItem={({item}) => <CelebTab celeb={item} />}
           estimatedItemSize={200}
-          ListFooterComponent={loading ? ActivityIndicator : null}
+          ListHeaderComponent={loading ? ActivityIndicator : null}
+          //   ListFooterComponent={loading ? ActivityIndicator : null}
+          contentContainerStyle={styles.padding}
         />
       </GestureHandlerRootView>
     </View>
@@ -33,6 +35,8 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  padding: {
     paddingHorizontal: 10,
   },
 });
