@@ -55,5 +55,5 @@ export const useCelebrities = () => {
     }
   }, [loading]);
 
-  return {celebrities, setCelebrities, loading};
+  return {celebrities, loading};
 };

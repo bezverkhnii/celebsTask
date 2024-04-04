@@ -6,40 +6,65 @@
  */
 
 import {FlashList} from '@shopify/flash-list';
-import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
+import {
+  ActivityIndicator,
+  Button,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import CelebTab from '../components/CelebTab';
-import {useCelebrities} from '../../src/hooks/useCelebrities';
-import SearchBar from '../components/SearchBar';
+import CelebCard from '../components/CelebCard';
+import SideMenu from '../components/SideMenu';
+import {FilterContext} from '../context/FilterContext';
 
-const HomeScreen = () => {
-  const {celebrities, setCelebrities, loading} = useCelebrities();
-  const [filteredCelebrities, setFilteredCelebrities] = useState();
+const HomeScreen = ({navigation}) => {
+  const {filteredData, loading} = useContext(FilterContext);
   const [searchText, setSearchText] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button onPress={() => setIsOpen(!isOpen)} title="Filter" />
+      ),
+    });
+    console.log(isOpen);
+  }, [navigation, isOpen]);
+
+  const data = useMemo(() => {
+    return filteredData.filter(celeb =>
+      celeb.name.toLowerCase().includes(searchText.toLowerCase()),
+    );
+  }, [filteredData, searchText]);
+
   return (
     <View style={styles.container}>
       <GestureHandlerRootView>
         {loading ? (
           <ActivityIndicator />
         ) : (
-          <FlashList
-            data={searchText ? filteredCelebrities : celebrities}
-            // keyExtractor={()} //some items has the same id
-            renderItem={({item}) => <CelebTab celeb={item} />}
-            estimatedItemSize={200}
-            ListHeaderComponent={() => (
-              <SearchBar
-                celebrities={celebrities}
-                searchText={searchText}
-                setSearchText={setSearchText}
-                setFilteredCelebrities={setFilteredCelebrities}
+          <>
+            <SideMenu isOpen={isOpen} />
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Search..."
+                onChangeText={e => setSearchText(e)}
+                value={searchText}
               />
-            )}
-            //   ListFooterComponent={loading ? ActivityIndicator : null}
-            ListEmptyComponent={() => <Text>Nothing here</Text>} //holder
-            contentContainerStyle={styles.padding}
-          />
+            </View>
+            <FlashList
+              data={data}
+              keyExtractor={item => item.id} //some items has the same id
+              renderItem={({item}) => <CelebCard celeb={item} />}
+              estimatedItemSize={200}
+              ListEmptyComponent={() => <Text>Nothing here</Text>} //write empty component
+              contentContainerStyle={styles.padding}
+            />
+          </>
         )}
       </GestureHandlerRootView>
     </View>
@@ -53,5 +78,15 @@ const styles = StyleSheet.create({
   },
   padding: {
     paddingHorizontal: 10,
+  },
+  inputContainer: {
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#fff',
+  },
+  input: {
+    padding: 10,
+    fontSize: 15,
   },
 });

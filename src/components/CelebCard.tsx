@@ -1,5 +1,5 @@
-import React, {useMemo, useState} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import React, {useContext, useMemo, useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
 import {
   Directions,
   Gesture,
@@ -10,32 +10,45 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-  withTiming,
 } from 'react-native-reanimated';
-import HeartIcon from './HeartIcon';
+import HeartIcon, {LikedState} from './HeartIcon';
 import OpacityPressable from './OpacityPressable';
 import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
+import {FilterContext} from '../context/FilterContext';
 
-const CelebTab = ({celeb}) => {
+const CelebCard = ({celeb}) => {
   const imageUrl = celeb.profile_path;
   const imagePath = `https://image.tmdb.org/t/p/w300${imageUrl}`;
   const navigation = useNavigation();
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState(LikedState.UNSET);
+  const {likedIds, setLikedIds, dislikedIds, setDislikedIds} =
+    useContext(FilterContext);
+
+  // likedFilter =  {
+  //   liked: [],
+  //   disliked: []
+  // }
 
   const handleDislike = () => {
-    console.log('disliked');
-    setLiked(false);
+    if (liked === LikedState.DISLIKED) {
+      setLiked(LikedState.UNSET);
+    } else {
+      setLiked(LikedState.DISLIKED);
+      setDislikedIds(prev => [...prev, celeb.id]);
+      setLikedIds(prev => prev.filter(id => id !== celeb.id));
+    }
   };
 
   const handleLike = () => {
-    console.log('liked');
-    setLiked(true);
+    setLiked(LikedState.LIKED);
+    setLikedIds(prev => [...prev, celeb.id]);
+    setDislikedIds(prev => prev.filter(id => id !== celeb.id));
   };
 
   const position = useSharedValue(0);
   const dislikeGesture = Gesture.Fling()
-    .direction(Directions.RIGHT)
+    .direction(Directions.LEFT)
     .onStart(() => {
       'worklet';
       runOnJS(handleDislike)();
@@ -45,7 +58,7 @@ const CelebTab = ({celeb}) => {
     });
 
   const likeGesture = Gesture.Fling()
-    .direction(Directions.LEFT)
+    .direction(Directions.RIGHT)
     .onStart(() => {
       'worklet';
       runOnJS(handleLike)();
@@ -83,19 +96,17 @@ const CelebTab = ({celeb}) => {
       <OpacityPressable onPress={handlePress}>
         <Animated.View
           style={[styles.container, {backgroundColor: color}, animatedStyle]}>
-          <View>
-            <FastImage
-              source={{uri: imagePath, priority: FastImage.priority.normal}}
-              style={styles.image}
-            />
-          </View>
+          <FastImage
+            source={{uri: imagePath, priority: FastImage.priority.normal}}
+            style={styles.image}
+          />
           <View style={styles.actorInfo}>
             <Text style={styles.name}>{celeb.name}</Text>
             <Text>Department: {celeb.known_for_department}</Text>
             <Text>Gender: {celeb.gender}</Text>
           </View>
           <View style={{paddingRight: 30}}>
-            <HeartIcon liked={liked} />
+            <HeartIcon likedState={liked} />
           </View>
         </Animated.View>
       </OpacityPressable>
@@ -103,7 +114,7 @@ const CelebTab = ({celeb}) => {
   );
 };
 
-export default CelebTab;
+export default CelebCard;
 
 const styles = StyleSheet.create({
   container: {

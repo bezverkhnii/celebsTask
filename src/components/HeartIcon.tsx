@@ -1,24 +1,32 @@
-import React, {useEffect} from 'react';
-import {Image, StyleSheet, View} from 'react-native';
+import React, {useEffect, useMemo} from 'react';
+import {Image, StyleSheet} from 'react-native';
 import FilledHeart from '../assets/images/filled-heart.png';
 import EmptyHeart from '../assets/images/empty-heart.png';
+import BrokenHeart from '../assets/images/dislike.png';
 import Animated, {
-  BounceIn,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
 
-const HeartIcon = ({liked = false}) => {
+export enum LikedState {
+  UNSET,
+  LIKED,
+  DISLIKED,
+}
+
+const HeartIcon = ({likedState}: {likedState: LikedState}) => {
   const scale = useSharedValue(1);
 
   useEffect(() => {
-    if (liked) {
+    if (likedState === LikedState.LIKED) {
       scale.value = withSpring(1.4);
+    } else if (likedState === LikedState.DISLIKED) {
+      scale.value = withSpring(1.2);
     } else {
       scale.value = withSpring(1);
     }
-  }, [liked]);
+  }, [likedState, scale]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -26,9 +34,20 @@ const HeartIcon = ({liked = false}) => {
     };
   });
 
+  const iconSource = useMemo(() => {
+    switch (likedState) {
+      case LikedState.LIKED:
+        return FilledHeart;
+      case LikedState.DISLIKED:
+        return BrokenHeart;
+      default:
+        return EmptyHeart;
+    }
+  }, [likedState]);
+
   return (
     <Animated.View style={animatedStyle}>
-      <Image source={liked ? FilledHeart : EmptyHeart} style={styles.image} />
+      <Image source={iconSource} style={styles.image} />
     </Animated.View>
   );
 };
