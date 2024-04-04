@@ -8,7 +8,8 @@ const SearchBar = ({celebrities}) => {
       celeb.name.toLowerCase().includes(text.toLowerCase()),
     );
 
-    console.log(filtered);
+    console.log(filtered); //logic works but state will be updated to many times which will block the fast updating logic,
+    //useContext ???
   };
 
   return (
