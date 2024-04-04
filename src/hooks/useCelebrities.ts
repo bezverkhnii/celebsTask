@@ -27,5 +27,33 @@ export const useCelebrities = () => {
     }
   }, [page]);
 
-  return {celebrities, loading};
+  useEffect(() => {
+    if (!loading) {
+      setLoading(true);
+      const celebMap = new Map();
+      celebrities.forEach(celeb => {
+        celebMap.set(celeb.id, celeb);
+      });
+
+      // Extract celeb objects from the map to get unique celebs
+      const uniqueData = Array.from(celebMap.values());
+      setCelebrities(uniqueData);
+      setCelebrities(prevCelebrities =>
+        prevCelebrities.sort((a, b) => {
+          const nameA = a.name.toUpperCase();
+          const nameB = b.name.toUpperCase();
+          if (nameA < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+        }),
+      );
+      setLoading(false);
+    }
+  }, [loading]);
+
+  return {celebrities, setCelebrities, loading};
 };

@@ -15,6 +15,7 @@ import Animated, {
 import HeartIcon from './HeartIcon';
 import OpacityPressable from './OpacityPressable';
 import {useNavigation} from '@react-navigation/native';
+import FastImage from 'react-native-fast-image';
 
 const CelebTab = ({celeb}) => {
   const imageUrl = celeb.profile_path;
@@ -83,7 +84,10 @@ const CelebTab = ({celeb}) => {
         <Animated.View
           style={[styles.container, {backgroundColor: color}, animatedStyle]}>
           <View>
-            <Image source={{uri: imagePath}} width={100} height={100} />
+            <FastImage
+              source={{uri: imagePath, priority: FastImage.priority.normal}}
+              style={styles.image}
+            />
           </View>
           <View style={styles.actorInfo}>
             <Text style={styles.name}>{celeb.name}</Text>
@@ -116,5 +120,10 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
+  },
+
+  image: {
+    width: 100,
+    height: 100,
   },
 });
