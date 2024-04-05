@@ -16,8 +16,9 @@ import OpacityPressable from './OpacityPressable';
 import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import {FilterContext} from '../context/FilterContext';
+import {ICelebrity} from '../types';
 
-const CelebCard = ({celeb}) => {
+const CelebCard = ({celeb}: {celeb: ICelebrity}) => {
   const {navigate} = useNavigation();
   const {celebLikedState, setLikedType} = useContext(FilterContext);
 
@@ -49,7 +50,7 @@ const CelebCard = ({celeb}) => {
       'worklet';
       runOnJS(handleDislike)();
     })
-    .onEnd((event, ctx) => {
+    .onEnd(() => {
       position.value = withSpring(0);
     });
 
@@ -59,7 +60,7 @@ const CelebCard = ({celeb}) => {
       'worklet';
       runOnJS(handleLike)();
     })
-    .onEnd((event, ctx) => {
+    .onEnd(() => {
       position.value = withSpring(0);
     });
 

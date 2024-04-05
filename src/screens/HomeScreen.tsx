@@ -29,11 +29,11 @@ import FilterIcon from '../assets/images/filter.png';
 import CloseIcon from '../assets/images/close.png';
 import FastImage from 'react-native-fast-image';
 import {useNavigation} from '@react-navigation/native';
-import {ICelebrity} from '../types';
+import {ICelebrity, IFilterContext} from '../types';
 
 const HomeScreen = () => {
   const {setOptions} = useNavigation();
-  const {filteredData, loading} = useContext(FilterContext);
+  const {filteredData, loading} = useContext<IFilterContext>(FilterContext);
   const [searchText, setSearchText] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
@@ -82,14 +82,18 @@ const HomeScreen = () => {
           value={searchText}
         />
       </View>
-      <FlashList
-        data={data}
-        keyExtractor={(item: ICelebrity) => String(item.id)}
-        renderItem={({item}) => <CelebCard celeb={item} />}
-        estimatedItemSize={200}
-        ListEmptyComponent={ListEmptyComponent}
-        contentContainerStyle={{...styles.padding, paddingBottom: bottom}}
-      />
+      {loading ? (
+        <ActivityIndicator />
+      ) : (
+        <FlashList
+          data={data}
+          keyExtractor={(item: ICelebrity) => String(item.id)}
+          renderItem={({item}) => <CelebCard celeb={item} />}
+          estimatedItemSize={200}
+          ListEmptyComponent={ListEmptyComponent}
+          contentContainerStyle={{...styles.padding, paddingBottom: bottom}}
+        />
+      )}
     </View>
   );
 };

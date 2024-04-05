@@ -3,6 +3,7 @@ declare global {
     interface RootParamList extends RootStackParamList {}
   }
 }
+import {Dispatch, SetStateAction} from 'react';
 import {LikedState} from '../components/HeartIcon';
 
 export type RootStackParamList = {
@@ -10,9 +11,8 @@ export type RootStackParamList = {
 
   ActorDetails: {celebrity: any};
 };
-export interface ICelebState {
-  celebId: string | number;
-  likedState: LikedState;
+export interface ICelebLikedState {
+  [key: string]: LikedState;
 }
 
 export interface IMovie {
@@ -58,4 +58,25 @@ export interface ICelebrity {
   name: string;
   popularity: number;
   profile_path: string;
+}
+
+export interface IFilterContext {
+  departmentFilter: string[];
+  departmentTypes: string[];
+  setDepartmentFilter: Dispatch<SetStateAction<string[]>>;
+  genderFilter: string[];
+  genderTypes: number[];
+  setGenderFilter: Dispatch<SetStateAction<string[]>>;
+  mediaTypes: string[];
+  mediaTypesFilter: string[];
+  setMediaTypesFilter: Dispatch<SetStateAction<string[]>>;
+  originalLanguageTypes: string[];
+  originalLanguageFilter: string[];
+  setOriginalLanguageFilter: Dispatch<SetStateAction<string[]>>;
+  celebLikedState: ICelebLikedState;
+  setLikedType: (celebID: number, type: LikedState) => void;
+  likesFilter: LikedState[];
+  setLikesFilter: Dispatch<SetStateAction<string[]>>;
+  filteredData: ICelebrity[];
+  loading: boolean;
 }

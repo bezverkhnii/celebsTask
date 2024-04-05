@@ -23,13 +23,6 @@ export const useCelebrities = () => {
     if (page <= 25) {
       getCelebrities();
     } else {
-      setLoading(false);
-    }
-  }, [page]);
-
-  useEffect(() => {
-    if (!loading) {
-      setLoading(true);
       const celebMap = new Map();
       celebrities.forEach((celeb: ICelebrity) => {
         celebMap.set(celeb.id, celeb);
@@ -52,7 +45,34 @@ export const useCelebrities = () => {
       );
       setLoading(false);
     }
-  }, [loading]);
+  }, [page]);
+
+  // useEffect(() => {
+  //   if (!loading) {
+  //     setLoading(true);
+  //     const celebMap = new Map();
+  //     celebrities.forEach((celeb: ICelebrity) => {
+  //       celebMap.set(celeb.id, celeb);
+  //     });
+
+  //     const uniqueData = Array.from(celebMap.values());
+  //     setCelebrities(uniqueData as ICelebrity[]);
+  //     setCelebrities(prevCelebrities =>
+  //       prevCelebrities.sort((a, b) => {
+  //         const nameA = a.name.toUpperCase();
+  //         const nameB = b.name.toUpperCase();
+  //         if (nameA < nameB) {
+  //           return -1;
+  //         }
+  //         if (nameA > nameB) {
+  //           return 1;
+  //         }
+  //         return 0;
+  //       }),
+  //     );
+  //     setLoading(false);
+  //   }
+  // }, [loading]);
 
   return {celebrities, loading};
 };

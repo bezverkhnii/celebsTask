@@ -1,23 +1,33 @@
+import React, {ReactNode} from 'react';
 import {createContext, useCallback, useEffect, useMemo, useState} from 'react';
 import {useCelebrities} from '../hooks/useCelebrities';
 import {LikedState} from '../components/HeartIcon';
+import {ICelebLikedState, IFilterContext} from '../types';
 
-export const FilterContext = createContext();
+//@ts-expect-error
+export const FilterContext = createContext<IFilterContext>();
 
-export const FilterProvider = ({children}) => {
+export const FilterProvider = ({children}: {children: ReactNode}) => {
   const {celebrities, loading} = useCelebrities();
 
-  const [departmentFilter, setDepartmentFilter] = useState([]);
-  const [departmentTypes, setDepartmentTypes] = useState([]);
-  const [genderTypes, setGenderTypes] = useState([]);
-  const [genderFilter, setGenderFilter] = useState([]);
-  const [mediaTypes, setMediaTypes] = useState([]);
-  const [mediaTypesFilter, setMediaTypesFilter] = useState([]);
-  const [originalLanguageTypes, setOriginalLanguageTypes] = useState([]);
-  const [originalLanguageFilter, setOriginalLanguageFilter] = useState([]);
-  const [likesFilter, setLikesFilter] = useState(Object.values(LikedState));
+  const [departmentFilter, setDepartmentFilter] = useState<string[]>([]);
+  const [departmentTypes, setDepartmentTypes] = useState<string[]>([]);
+  const [genderTypes, setGenderTypes] = useState<number[]>([]);
+  const [genderFilter, setGenderFilter] = useState<number[]>([]);
+  const [mediaTypes, setMediaTypes] = useState<string[]>([]);
+  const [mediaTypesFilter, setMediaTypesFilter] = useState<string[]>([]);
+  const [originalLanguageTypes, setOriginalLanguageTypes] = useState<string[]>(
+    [],
+  );
+
+  const [originalLanguageFilter, setOriginalLanguageFilter] = useState<
+    string[]
+  >([]);
+  const [likesFilter, setLikesFilter] = useState<LikedState[]>(
+    Object.values(LikedState),
+  );
   const [celebLikedState, setCelebLikedState] = useState({});
-  const setLikedType = useCallback((celebID: string, type: LikedState) => {
+  const setLikedType = useCallback((celebID: number, type: LikedState) => {
     setCelebLikedState(curr => ({...curr, [celebID]: type}));
   }, []);
 
@@ -51,19 +61,20 @@ export const FilterProvider = ({children}) => {
     const originalLanguageConstants = Array.from(originalLanguages);
     const mediaTypesConstants = Array.from(mediaTypesSet);
     // Set state with the collected data
-    setDepartmentTypes(departmentConstants);
-    setDepartmentFilter(departmentConstants);
-    setGenderTypes(gendersConstants);
-    setGenderFilter(gendersConstants);
-    setMediaTypes(mediaTypesConstants),
-      setMediaTypesFilter(mediaTypesConstants);
-    setOriginalLanguageTypes(originalLanguageConstants);
-    setOriginalLanguageFilter(originalLanguageConstants);
+    setDepartmentTypes(departmentConstants as string[]);
+    setDepartmentFilter(departmentConstants as string[]);
+    setGenderTypes(gendersConstants as number[]);
+    setGenderFilter(gendersConstants as number[]);
+    setMediaTypes(mediaTypesConstants as string[]);
+    setMediaTypesFilter(mediaTypesConstants as string[]);
+    setOriginalLanguageTypes(originalLanguageConstants as string[]);
+    setOriginalLanguageFilter(originalLanguageConstants as string[]);
   }, [celebrities]);
 
   const filteredData = useMemo(() => {
     return celebrities.filter(celeb => {
-      const likedState = celebLikedState[celeb.id] || LikedState.UNSET;
+      const likedState =
+        (celebLikedState as ICelebLikedState)[celeb.id] || LikedState.UNSET;
       return (
         departmentFilter.includes(celeb.known_for_department) &&
         genderFilter.includes(celeb.gender) &&
@@ -108,6 +119,7 @@ export const FilterProvider = ({children}) => {
   };
 
   return (
+    //@ts-expect-error
     <FilterContext.Provider value={shared}>{children}</FilterContext.Provider>
   );
 };
