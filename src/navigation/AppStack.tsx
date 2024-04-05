@@ -18,7 +18,8 @@ const AppStack = () => {
             component={ActorDetailsScreen}
             options={{
               headerTitle: '',
-              headerBackTitle: '',
+              headerBackTitleVisible: false,
+              headerTintColor: 'black',
             }}
           />
         </Stack.Navigator>

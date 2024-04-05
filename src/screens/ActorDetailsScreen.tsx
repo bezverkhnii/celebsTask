@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Image, StyleSheet, Text, View, useWindowDimensions} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, {
@@ -56,7 +56,7 @@ const Card: React.FC<CardProps> = ({children, index, contentOffsetX}) => {
   return <Animated.View style={animatedStyle}>{children}</Animated.View>;
 };
 
-const ActorDetailsScreen = ({route}) => {
+const ActorDetailsScreen = ({route, navigation}) => {
   const [slideIdx, setSlideIdx] = useState(0);
   const celeb = route.params.celebrity;
   // console.log(celeb.known_for, 'knowm');
@@ -67,6 +67,13 @@ const ActorDetailsScreen = ({route}) => {
     backdrop: i.backdrop_path,
     overview: i.overview,
   }));
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: celeb.name,
+    });
+  }, [navigation]);
+
   // console.log(movies);
   const {width} = useWindowDimensions();
   const contentOffset = useSharedValue(0);

@@ -8,13 +8,48 @@ import {
 import Animated from 'react-native-reanimated';
 import {MultiSelect} from 'react-native-element-dropdown';
 import {FilterContext} from '../context/FilterContext';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const SideMenu = ({isOpen}) => {
-  const {departmentTypes, departmentFilter, setDepartmentFilter} =
-    useContext(FilterContext);
+  const {
+    departmentTypes,
+    departmentFilter,
+    setDepartmentFilter,
+    genderTypes,
+    genderFilter,
+    setGenderFilter,
+    mediaTypes,
+    mediaTypesFilter,
+    setMediaTypesFilter,
+    originalLanguageTypes,
+    originalLanguageFilter,
+    setOriginalLanguageFilter,
+  } = useContext(FilterContext);
 
   /////
   const departmentValues = departmentTypes.map(type => ({
+    label: type,
+    value: type,
+  }));
+
+  const genderValues = genderTypes.map(type => ({
+    label:
+      type === 0
+        ? 'Not specified'
+        : type === 1
+        ? 'Female'
+        : type === 2
+        ? 'Male'
+        : 'Non-binary',
+    value: type,
+  }));
+
+  const mediaTypesValues = mediaTypes.map(type => ({
+    label: type,
+    value: type,
+  }));
+
+  const originalLanguageValues = originalLanguageTypes.map(type => ({
     label: type,
     value: type,
   }));
@@ -37,32 +72,56 @@ const SideMenu = ({isOpen}) => {
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
       <View style={styles.menuContent}>
-        <MultiSelect
-          placeholder="Filter by department"
-          data={departmentValues}
-          //@ts-ignore
-          labelField="label"
-          //@ts-ignore
-          valueField="value"
-          value={departmentFilter}
-          onChange={item => {
-            setDepartmentFilter(item);
-            console.log(departmentFilter);
-          }}
-        />
-        <MultiSelect
-          placeholder="Filter by department"
-          data={departmentValues}
-          //@ts-ignore
-          labelField="label"
-          //@ts-ignore
-          valueField="value"
-          value={departmentFilter}
-          onChange={item => {
-            setDepartmentFilter(item);
-            console.log(departmentFilter);
-          }}
-        />
+        <ScrollView>
+          <MultiSelect
+            placeholder="Filter by department"
+            data={departmentValues}
+            //@ts-ignore
+            labelField="label"
+            //@ts-ignore
+            valueField="value"
+            value={departmentFilter}
+            onChange={item => {
+              setDepartmentFilter(item);
+            }}
+          />
+          <MultiSelect
+            placeholder="Filter by gender"
+            data={genderValues}
+            //@ts-ignore
+            labelField="label"
+            //@ts-ignore
+            valueField="value"
+            value={genderFilter}
+            onChange={item => {
+              setGenderFilter(item);
+            }}
+          />
+          <MultiSelect
+            placeholder="Filter by media type"
+            data={mediaTypesValues}
+            //@ts-ignore
+            labelField="label"
+            //@ts-ignore
+            valueField="value"
+            value={mediaTypesFilter}
+            onChange={item => {
+              setMediaTypesFilter(item);
+            }}
+          />
+          <MultiSelect
+            placeholder="Filter by original langauge"
+            data={originalLanguageValues}
+            //@ts-ignore
+            labelField="label"
+            //@ts-ignore
+            valueField="value"
+            value={originalLanguageFilter}
+            onChange={item => {
+              setOriginalLanguageFilter(item);
+            }}
+          />
+        </ScrollView>
       </View>
     </Animated.View>
   );
