@@ -19,8 +19,9 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {RootStackParamList} from '../types';
+import {IMovieFields, RootStackParamList} from '../types';
 import {useNavigation, useRoute} from '@react-navigation/native';
+import {IMovie} from '../types';
 
 type CardProps = {
   children: React.ReactNode;
@@ -73,7 +74,7 @@ const ActorDetailsScreen = () => {
   const {params} = useRoute<NavigationProps['route']>();
   const [slideIdx, setSlideIdx] = useState(0);
   const celeb = params.celebrity;
-  const movies = celeb.known_for.map(movie => ({
+  const movies: IMovie[] = celeb.known_for.map((movie: IMovieFields) => ({
     movie: movie.name || movie.original_title || '',
     year: movie.release_date || movie.first_air_date,
     poster: movie.poster_path,

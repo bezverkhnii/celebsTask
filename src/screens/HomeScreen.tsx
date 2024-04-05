@@ -29,6 +29,7 @@ import FilterIcon from '../assets/images/filter.png';
 import CloseIcon from '../assets/images/close.png';
 import FastImage from 'react-native-fast-image';
 import {useNavigation} from '@react-navigation/native';
+import {ICelebrity} from '../types';
 
 const HomeScreen = () => {
   const {setOptions} = useNavigation();
@@ -51,7 +52,7 @@ const HomeScreen = () => {
   }, [setOptions, isOpen]);
 
   const data = useMemo(() => {
-    return filteredData.filter(celeb =>
+    return filteredData.filter((celeb: ICelebrity) =>
       celeb.name.toLowerCase().includes(searchText.toLowerCase()),
     );
   }, [filteredData, searchText]);
@@ -83,10 +84,10 @@ const HomeScreen = () => {
       </View>
       <FlashList
         data={data}
-        keyExtractor={item => item.id} //some items has the same id
+        keyExtractor={(item: ICelebrity) => String(item.id)}
         renderItem={({item}) => <CelebCard celeb={item} />}
         estimatedItemSize={200}
-        ListEmptyComponent={ListEmptyComponent} //write empty component
+        ListEmptyComponent={ListEmptyComponent}
         contentContainerStyle={{...styles.padding, paddingBottom: bottom}}
       />
     </View>
