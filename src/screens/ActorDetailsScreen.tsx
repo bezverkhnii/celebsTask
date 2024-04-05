@@ -1,5 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {Image, StyleSheet, Text, View, useWindowDimensions} from 'react-native';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, {
   Extrapolate,
@@ -99,7 +106,7 @@ const ActorDetailsScreen = ({route, navigation}) => {
 
   console.log(slideIdx);
   return (
-    <View>
+    <ScrollView>
       <Animated.ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -131,14 +138,17 @@ const ActorDetailsScreen = ({route, navigation}) => {
           }}
           style={styles.actorPhoto}
         />
-        <View>
-          <Text>{celeb.name}</Text>
-          <Text>Known for playing in: {movies[slideIdx].movie}</Text>
+        <View style={styles.actorDescription}>
+          <Text style={styles.actorName}>{celeb.name}</Text>
+          <Text>
+            Known for playing in:{' '}
+            <Text style={styles.movieTitle}>{movies[slideIdx].movie}</Text>
+          </Text>
           <Text>Release Date: {movies[slideIdx].year}</Text>
         </View>
       </View>
-      <Text>{movies[slideIdx].overview}</Text>
-    </View>
+      <Text style={styles.movieOverview}>{movies[slideIdx].overview}</Text>
+    </ScrollView>
   );
 };
 
@@ -146,17 +156,35 @@ export default ActorDetailsScreen;
 
 const styles = StyleSheet.create({
   profileSection: {
+    paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    justifyContent: 'space-evenly',
   },
   poster: {
     width: 300,
-    height: 380,
+    height: 450,
   },
 
   actorPhoto: {
-    width: 100,
-    height: 150,
+    width: 150,
+    height: 200,
+  },
+
+  actorName: {
+    fontWeight: '600',
+    fontSize: 20,
+  },
+  actorDescription: {
+    width: 200,
+  },
+
+  movieTitle: {
+    fontWeight: '600',
+  },
+
+  movieOverview: {
+    paddingHorizontal: 10,
+    paddingBottom: 20,
   },
 });

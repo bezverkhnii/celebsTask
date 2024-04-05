@@ -22,8 +22,14 @@ const CelebCard = ({celeb}) => {
   const imagePath = `https://image.tmdb.org/t/p/w300${imageUrl}`;
   const navigation = useNavigation();
   const [liked, setLiked] = useState(LikedState.UNSET);
-  const {likedIds, setLikedIds, dislikedIds, setDislikedIds} =
-    useContext(FilterContext);
+  const {
+    likedIds,
+    setLikedIds,
+    dislikedIds,
+    setDislikedIds,
+    unmarkedIds,
+    setUnmarkedIds,
+  } = useContext(FilterContext);
 
   // likedFilter =  {
   //   liked: [],
@@ -33,10 +39,12 @@ const CelebCard = ({celeb}) => {
   const handleDislike = () => {
     if (liked === LikedState.DISLIKED) {
       setLiked(LikedState.UNSET);
+      setUnmarkedIds(prev => [...prev, celeb.id]);
     } else {
       setLiked(LikedState.DISLIKED);
       setDislikedIds(prev => [...prev, celeb.id]);
       setLikedIds(prev => prev.filter(id => id !== celeb.id));
+      setUnmarkedIds(prev => prev.filter(id => id !== celeb.id));
     }
   };
 
@@ -44,6 +52,7 @@ const CelebCard = ({celeb}) => {
     setLiked(LikedState.LIKED);
     setLikedIds(prev => [...prev, celeb.id]);
     setDislikedIds(prev => prev.filter(id => id !== celeb.id));
+    setUnmarkedIds(prev => prev.filter(id => id !== celeb.id));
   };
 
   const position = useSharedValue(0);

@@ -9,6 +9,7 @@ import Animated from 'react-native-reanimated';
 import {MultiSelect} from 'react-native-element-dropdown';
 import {FilterContext} from '../context/FilterContext';
 import {ScrollView} from 'react-native-gesture-handler';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const SideMenu = ({isOpen}) => {
   const {
@@ -24,6 +25,8 @@ const SideMenu = ({isOpen}) => {
     originalLanguageTypes,
     originalLanguageFilter,
     setOriginalLanguageFilter,
+    marksFilter,
+    setMarksFilter,
   } = useContext(FilterContext);
 
   /////
@@ -53,6 +56,21 @@ const SideMenu = ({isOpen}) => {
     label: type,
     value: type,
   }));
+
+  const marksValues = [
+    {
+      label: 'liked',
+      value: 'liked',
+    },
+    {
+      label: 'disliked',
+      value: 'disliked',
+    },
+    {
+      label: 'unmarked',
+      value: 'unmarked',
+    },
+  ];
   /////
   const menuWidth = useSharedValue(0);
   useEffect(() => {
@@ -63,6 +81,8 @@ const SideMenu = ({isOpen}) => {
     }
   });
 
+  const {bottom} = useSafeAreaInsets();
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       width: menuWidth.value,
@@ -71,58 +91,72 @@ const SideMenu = ({isOpen}) => {
 
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
-      <View style={styles.menuContent}>
-        <ScrollView>
-          <MultiSelect
-            placeholder="Filter by department"
-            data={departmentValues}
-            //@ts-ignore
-            labelField="label"
-            //@ts-ignore
-            valueField="value"
-            value={departmentFilter}
-            onChange={item => {
-              setDepartmentFilter(item);
-            }}
-          />
-          <MultiSelect
-            placeholder="Filter by gender"
-            data={genderValues}
-            //@ts-ignore
-            labelField="label"
-            //@ts-ignore
-            valueField="value"
-            value={genderFilter}
-            onChange={item => {
-              setGenderFilter(item);
-            }}
-          />
-          <MultiSelect
-            placeholder="Filter by media type"
-            data={mediaTypesValues}
-            //@ts-ignore
-            labelField="label"
-            //@ts-ignore
-            valueField="value"
-            value={mediaTypesFilter}
-            onChange={item => {
-              setMediaTypesFilter(item);
-            }}
-          />
-          <MultiSelect
-            placeholder="Filter by original langauge"
-            data={originalLanguageValues}
-            //@ts-ignore
-            labelField="label"
-            //@ts-ignore
-            valueField="value"
-            value={originalLanguageFilter}
-            onChange={item => {
-              setOriginalLanguageFilter(item);
-            }}
-          />
-        </ScrollView>
-      </View>
+      <ScrollView
+        contentContainerStyle={[
+          styles.menuContent,
+          {paddingBottom: bottom || 8},
+        ]}>
+        <MultiSelect
+          placeholder="Filter by department"
+          data={departmentValues}
+          //@ts-ignore
+          labelField="label"
+          //@ts-ignore
+          valueField="value"
+          value={departmentFilter}
+          onChange={item => {
+            setDepartmentFilter(item);
+          }}
+        />
+        <MultiSelect
+          placeholder="Filter by gender"
+          data={genderValues}
+          //@ts-ignore
+          labelField="label"
+          //@ts-ignore
+          valueField="value"
+          value={genderFilter}
+          onChange={item => {
+            setGenderFilter(item);
+          }}
+        />
+        <MultiSelect
+          placeholder="Filter by media type"
+          data={mediaTypesValues}
+          //@ts-ignore
+          labelField="label"
+          //@ts-ignore
+          valueField="value"
+          value={mediaTypesFilter}
+          onChange={item => {
+            setMediaTypesFilter(item);
+          }}
+        />
+        <MultiSelect
+          placeholder="Filter by original langauge"
+          data={originalLanguageValues}
+          //@ts-ignore
+          labelField="label"
+          //@ts-ignore
+          valueField="value"
+          value={originalLanguageFilter}
+          onChange={item => {
+            setOriginalLanguageFilter(item);
+          }}
+        />
+        <MultiSelect
+          placeholder="Filter by marks"
+          data={marksValues}
+          //@ts-ignore
+          labelField="label"
+          //@ts-ignore
+          valueField="value"
+          value={marksFilter}
+          onChange={item => {
+            setMarksFilter(item);
+          }}
+        />
+      </ScrollView>
     </Animated.View>
   );
 };
@@ -144,17 +178,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  closeButton: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-  },
-  closeButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   menuContent: {
-    paddingTop: 20,
     paddingHorizontal: 10,
   },
 });
