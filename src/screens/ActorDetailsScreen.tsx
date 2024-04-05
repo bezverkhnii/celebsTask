@@ -1,6 +1,6 @@
+import {StackScreenProps} from '@react-navigation/stack';
 import React, {useEffect, useState} from 'react';
 import {
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Animated, {
-  Extrapolate,
+  Extrapolation,
   SharedValue,
   interpolate,
   runOnJS,
@@ -18,6 +18,9 @@ import Animated, {
   useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {RootStackParamList} from '../types';
+import {useNavigation, useRoute} from '@react-navigation/native';
 
 type CardProps = {
   children: React.ReactNode;
@@ -25,16 +28,16 @@ type CardProps = {
   contentOffsetX: SharedValue<number>;
 };
 
-export const SEPARATOR_WIDTH_BY_DESIGN = 12;
-export const CARD_INACTIVE_WIDTH_BY_DESIGN = 256;
-export const CARD_INACTIVE_WIDTH =
+const SEPARATOR_WIDTH_BY_DESIGN = 12;
+const CARD_INACTIVE_WIDTH_BY_DESIGN = 256;
+const CARD_INACTIVE_WIDTH =
   CARD_INACTIVE_WIDTH_BY_DESIGN + SEPARATOR_WIDTH_BY_DESIGN;
-export const CARD_INACTIVE_HEIGHT = 340;
-export const CARD_ACTIVE_WIDTH = 300;
-export const CARD_ACTIVE_HEIGHT = 380;
-export const SCALE_X = CARD_INACTIVE_WIDTH / CARD_ACTIVE_WIDTH;
-export const SCALE_Y = CARD_INACTIVE_HEIGHT / CARD_ACTIVE_HEIGHT;
-export const PAGE_WIDTH = CARD_ACTIVE_WIDTH;
+const CARD_INACTIVE_HEIGHT = 340;
+const CARD_ACTIVE_WIDTH = 300;
+const CARD_ACTIVE_HEIGHT = 380;
+const SCALE_X = CARD_INACTIVE_WIDTH / CARD_ACTIVE_WIDTH;
+const SCALE_Y = CARD_INACTIVE_HEIGHT / CARD_ACTIVE_HEIGHT;
+const PAGE_WIDTH = CARD_ACTIVE_WIDTH;
 
 const Card: React.FC<CardProps> = ({children, index, contentOffsetX}) => {
   const animatedStyle = useAnimatedStyle(() => {
@@ -47,13 +50,13 @@ const Card: React.FC<CardProps> = ({children, index, contentOffsetX}) => {
       contentOffsetX.value,
       inputRange,
       [SCALE_X, 1, SCALE_X],
-      Extrapolate.CLAMP,
+      Extrapolation.CLAMP,
     );
     const scaleY = interpolate(
       contentOffsetX.value,
       inputRange,
       [SCALE_Y, 1, SCALE_Y],
-      Extrapolate.CLAMP,
+      Extrapolation.CLAMP,
     );
     return {
       transform: [{scaleX}, {scaleY}],
@@ -63,23 +66,26 @@ const Card: React.FC<CardProps> = ({children, index, contentOffsetX}) => {
   return <Animated.View style={animatedStyle}>{children}</Animated.View>;
 };
 
-const ActorDetailsScreen = ({route, navigation}) => {
+type NavigationProps = StackScreenProps<RootStackParamList, 'ActorDetails'>;
+
+const ActorDetailsScreen = () => {
+  const {setOptions} = useNavigation();
+  const {params} = useRoute<NavigationProps['route']>();
   const [slideIdx, setSlideIdx] = useState(0);
-  const celeb = route.params.celebrity;
-  // console.log(celeb.known_for, 'knowm');
-  const movies = celeb.known_for.map(i => ({
-    movie: i.name || i.original_title || '',
-    year: i.release_date || i.first_air_date,
-    poster: i.poster_path,
-    backdrop: i.backdrop_path,
-    overview: i.overview,
+  const celeb = params.celebrity;
+  const movies = celeb.known_for.map(movie => ({
+    movie: movie.name || movie.original_title || '',
+    year: movie.release_date || movie.first_air_date,
+    poster: movie.poster_path,
+    backdrop: movie.backdrop_path,
+    overview: movie.overview,
   }));
 
   useEffect(() => {
-    navigation.setOptions({
+    setOptions({
       headerTitle: celeb.name,
     });
-  }, [navigation]);
+  }, [setOptions, celeb.name]);
 
   // console.log(movies);
   const {width} = useWindowDimensions();
@@ -104,9 +110,9 @@ const ActorDetailsScreen = ({route, navigation}) => {
     runOnJS(setSlideIdx)(slideIndex.value);
   });
 
-  console.log(slideIdx);
+  const {bottom} = useSafeAreaInsets();
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{paddingBottom: bottom || 8}}>
       <Animated.ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -140,14 +146,20 @@ const ActorDetailsScreen = ({route, navigation}) => {
         />
         <View style={styles.actorDescription}>
           <Text style={styles.actorName}>{celeb.name}</Text>
-          <Text>
-            Known for playing in:{' '}
-            <Text style={styles.movieTitle}>{movies[slideIdx].movie}</Text>
+          <Text style={styles.descriptionText}>
+            {'Known for playing in: '}
+            <Text style={styles.bold}>{movies[slideIdx].movie}</Text>
           </Text>
-          <Text>Release Date: {movies[slideIdx].year}</Text>
+          <Text style={styles.descriptionText}>
+            {'Release Date: '}
+            <Text style={styles.bold}>{movies[slideIdx].year}</Text>
+          </Text>
         </View>
       </View>
-      <Text style={styles.movieOverview}>{movies[slideIdx].overview}</Text>
+      <View style={styles.movieOverview}>
+        <Text style={styles.overviewTitle}>Overview</Text>
+        <Text style={styles.descriptionText}>{movies[slideIdx].overview}</Text>
+      </View>
     </ScrollView>
   );
 };
@@ -156,10 +168,8 @@ export default ActorDetailsScreen;
 
 const styles = StyleSheet.create({
   profileSection: {
-    paddingVertical: 10,
+    padding: 10,
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
   },
   poster: {
     width: 300,
@@ -176,15 +186,26 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   actorDescription: {
-    width: 200,
+    flex: 1,
+    marginHorizontal: 8,
   },
 
-  movieTitle: {
+  bold: {
     fontWeight: '600',
   },
 
   movieOverview: {
     paddingHorizontal: 10,
     paddingBottom: 20,
+  },
+
+  overviewTitle: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+
+  descriptionText: {
+    fontSize: 16,
   },
 });

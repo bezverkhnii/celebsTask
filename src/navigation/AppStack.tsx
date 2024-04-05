@@ -1,30 +1,32 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import React, {useState} from 'react';
+import React from 'react';
 import HomeScreen from '../screens/HomeScreen';
 import ActorDetailsScreen from '../screens/ActorDetailsScreen';
-import {Button} from 'react-native';
 import {FilterProvider} from '../context/FilterContext';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const AppStack = () => {
   const Stack = createStackNavigator();
   return (
-    <FilterProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="CelebritiesList" component={HomeScreen} />
-          <Stack.Screen
-            name="ActorDetails"
-            component={ActorDetailsScreen}
-            options={{
-              headerTitle: '',
-              headerBackTitleVisible: false,
-              headerTintColor: 'black',
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </FilterProvider>
+    <GestureHandlerRootView>
+      <FilterProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name="CelebritiesList" component={HomeScreen} />
+            <Stack.Screen
+              name="ActorDetails"
+              component={ActorDetailsScreen}
+              options={{
+                headerTitle: '',
+                headerBackTitleVisible: false,
+                headerTintColor: 'black',
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </FilterProvider>
+    </GestureHandlerRootView>
   );
 };
 

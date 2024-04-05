@@ -1,5 +1,5 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Button} from 'react-native';
+import React, {useContext, useEffect} from 'react';
+import {StyleSheet} from 'react-native';
 import {
   useAnimatedStyle,
   useSharedValue,
@@ -9,9 +9,9 @@ import Animated from 'react-native-reanimated';
 import {MultiSelect} from 'react-native-element-dropdown';
 import {FilterContext} from '../context/FilterContext';
 import {ScrollView} from 'react-native-gesture-handler';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {LikedState} from './HeartIcon';
 
-const SideMenu = ({isOpen}) => {
+const SideMenu = ({isOpen}: {isOpen: boolean}) => {
   const {
     departmentTypes,
     departmentFilter,
@@ -25,8 +25,8 @@ const SideMenu = ({isOpen}) => {
     originalLanguageTypes,
     originalLanguageFilter,
     setOriginalLanguageFilter,
-    marksFilter,
-    setMarksFilter,
+    likesFilter,
+    setLikesFilter,
   } = useContext(FilterContext);
 
   /////
@@ -57,20 +57,11 @@ const SideMenu = ({isOpen}) => {
     value: type,
   }));
 
-  const marksValues = [
-    {
-      label: 'liked',
-      value: 'liked',
-    },
-    {
-      label: 'disliked',
-      value: 'disliked',
-    },
-    {
-      label: 'unmarked',
-      value: 'unmarked',
-    },
-  ];
+  const likesValues = Object.values(LikedState).map(type => ({
+    label: type,
+    value: type,
+  }));
+
   /////
   const menuWidth = useSharedValue(0);
   useEffect(() => {
@@ -81,8 +72,6 @@ const SideMenu = ({isOpen}) => {
     }
   });
 
-  const {bottom} = useSafeAreaInsets();
-
   const animatedStyle = useAnimatedStyle(() => {
     return {
       width: menuWidth.value,
@@ -92,16 +81,11 @@ const SideMenu = ({isOpen}) => {
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
       <ScrollView
-        contentContainerStyle={[
-          styles.menuContent,
-          {paddingBottom: bottom || 8},
-        ]}>
+        contentContainerStyle={[styles.menuContent, {paddingBottom: 100 || 8}]}>
         <MultiSelect
           placeholder="Filter by department"
           data={departmentValues}
-          //@ts-ignore
           labelField="label"
-          //@ts-ignore
           valueField="value"
           value={departmentFilter}
           onChange={item => {
@@ -111,9 +95,7 @@ const SideMenu = ({isOpen}) => {
         <MultiSelect
           placeholder="Filter by gender"
           data={genderValues}
-          //@ts-ignore
           labelField="label"
-          //@ts-ignore
           valueField="value"
           value={genderFilter}
           onChange={item => {
@@ -123,9 +105,7 @@ const SideMenu = ({isOpen}) => {
         <MultiSelect
           placeholder="Filter by media type"
           data={mediaTypesValues}
-          //@ts-ignore
           labelField="label"
-          //@ts-ignore
           valueField="value"
           value={mediaTypesFilter}
           onChange={item => {
@@ -135,9 +115,7 @@ const SideMenu = ({isOpen}) => {
         <MultiSelect
           placeholder="Filter by original langauge"
           data={originalLanguageValues}
-          //@ts-ignore
           labelField="label"
-          //@ts-ignore
           valueField="value"
           value={originalLanguageFilter}
           onChange={item => {
@@ -146,14 +124,12 @@ const SideMenu = ({isOpen}) => {
         />
         <MultiSelect
           placeholder="Filter by marks"
-          data={marksValues}
-          //@ts-ignore
+          data={likesValues}
           labelField="label"
-          //@ts-ignore
           valueField="value"
-          value={marksFilter}
+          value={likesFilter}
           onChange={item => {
-            setMarksFilter(item);
+            setLikesFilter(item);
           }}
         />
       </ScrollView>
@@ -165,7 +141,7 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: 0,
-    right: 0, // Positioning on the right side
+    right: 0,
     bottom: 0,
     backgroundColor: '#fff',
     zIndex: 100,

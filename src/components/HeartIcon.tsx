@@ -10,9 +10,9 @@ import Animated, {
 } from 'react-native-reanimated';
 
 export enum LikedState {
-  UNSET,
-  LIKED,
-  DISLIKED,
+  UNSET = 'Unset',
+  LIKED = 'Liked',
+  DISLIKED = 'Disliked',
 }
 
 const HeartIcon = ({likedState}: {likedState: LikedState}) => {

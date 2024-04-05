@@ -1,4 +1,4 @@
-import React, {useContext, useMemo, useState} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {
   Directions,
@@ -18,41 +18,28 @@ import FastImage from 'react-native-fast-image';
 import {FilterContext} from '../context/FilterContext';
 
 const CelebCard = ({celeb}) => {
-  const imageUrl = celeb.profile_path;
-  const imagePath = `https://image.tmdb.org/t/p/w300${imageUrl}`;
-  const navigation = useNavigation();
-  const [liked, setLiked] = useState(LikedState.UNSET);
-  const {
-    likedIds,
-    setLikedIds,
-    dislikedIds,
-    setDislikedIds,
-    unmarkedIds,
-    setUnmarkedIds,
-  } = useContext(FilterContext);
+  const {navigate} = useNavigation();
+  const {celebLikedState, setLikedType} = useContext(FilterContext);
 
-  // likedFilter =  {
-  //   liked: [],
-  //   disliked: []
-  // }
+  const likedState = useMemo(
+    () => celebLikedState[celeb.id] || LikedState.UNSET,
+    [celebLikedState, celeb.id],
+  );
 
   const handleDislike = () => {
-    if (liked === LikedState.DISLIKED) {
-      setLiked(LikedState.UNSET);
-      setUnmarkedIds(prev => [...prev, celeb.id]);
+    if (likedState === LikedState.DISLIKED) {
+      setLikedType(celeb.id, LikedState.UNSET);
     } else {
-      setLiked(LikedState.DISLIKED);
-      setDislikedIds(prev => [...prev, celeb.id]);
-      setLikedIds(prev => prev.filter(id => id !== celeb.id));
-      setUnmarkedIds(prev => prev.filter(id => id !== celeb.id));
+      setLikedType(celeb.id, LikedState.DISLIKED);
     }
   };
 
   const handleLike = () => {
-    setLiked(LikedState.LIKED);
-    setLikedIds(prev => [...prev, celeb.id]);
-    setDislikedIds(prev => prev.filter(id => id !== celeb.id));
-    setUnmarkedIds(prev => prev.filter(id => id !== celeb.id));
+    if (likedState === LikedState.LIKED) {
+      setLikedType(celeb.id, LikedState.UNSET);
+    } else {
+      setLikedType(celeb.id, LikedState.LIKED);
+    }
   };
 
   const position = useSharedValue(0);
@@ -82,7 +69,7 @@ const CelebCard = ({celeb}) => {
     transform: [{translateX: position.value}],
   }));
   const handlePress = () => {
-    navigation.navigate('ActorDetails', {
+    navigate('ActorDetails', {
       celebrity: celeb,
     });
   };
@@ -106,16 +93,18 @@ const CelebCard = ({celeb}) => {
         <Animated.View
           style={[styles.container, {backgroundColor: color}, animatedStyle]}>
           <FastImage
-            source={{uri: imagePath, priority: FastImage.priority.normal}}
+            source={{
+              uri: `https://image.tmdb.org/t/p/w300${celeb.profile_path}`,
+              priority: FastImage.priority.normal,
+            }}
             style={styles.image}
           />
           <View style={styles.actorInfo}>
             <Text style={styles.name}>{celeb.name}</Text>
             <Text>Department: {celeb.known_for_department}</Text>
-            <Text>Gender: {celeb.gender}</Text>
           </View>
           <View style={{paddingRight: 30}}>
-            <HeartIcon likedState={liked} />
+            <HeartIcon likedState={likedState} />
           </View>
         </Animated.View>
       </OpacityPressable>
