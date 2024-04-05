@@ -8,30 +8,21 @@ export const useCelebrities = () => {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const getCelebrities = async () => {
-      try {
-        //@ts-expect-error
-        const response = await getMoviesByPage(page).get();
-        const data = response.data.results;
-        setCelebrities(prevCelebrities => [...prevCelebrities, ...data]);
-        console.log(page);
-        setPage(page + 1);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     if (page <= 25) {
-      getCelebrities();
+      (async () => {
+        try {
+          const response = await getMoviesByPage(page);
+          const data = response.data.results;
+          setCelebrities(prevCelebrities => prevCelebrities.concat(data));
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setPage(currPage => currPage + 1);
+        }
+      })();
     } else {
-      const celebMap = new Map();
-      celebrities.forEach((celeb: ICelebrity) => {
-        celebMap.set(celeb.id, celeb);
-      });
-
-      const uniqueData = Array.from(celebMap.values());
-      setCelebrities(uniqueData as ICelebrity[]);
-      setCelebrities(prevCelebrities =>
-        prevCelebrities.sort((a, b) => {
+      setCelebrities(prevCelebrities => {
+        return [...prevCelebrities].sort((a, b) => {
           const nameA = a.name.toUpperCase();
           const nameB = b.name.toUpperCase();
           if (nameA < nameB) {
@@ -41,38 +32,11 @@ export const useCelebrities = () => {
             return 1;
           }
           return 0;
-        }),
-      );
+        });
+      });
       setLoading(false);
     }
   }, [page]);
-
-  // useEffect(() => {
-  //   if (!loading) {
-  //     setLoading(true);
-  //     const celebMap = new Map();
-  //     celebrities.forEach((celeb: ICelebrity) => {
-  //       celebMap.set(celeb.id, celeb);
-  //     });
-
-  //     const uniqueData = Array.from(celebMap.values());
-  //     setCelebrities(uniqueData as ICelebrity[]);
-  //     setCelebrities(prevCelebrities =>
-  //       prevCelebrities.sort((a, b) => {
-  //         const nameA = a.name.toUpperCase();
-  //         const nameB = b.name.toUpperCase();
-  //         if (nameA < nameB) {
-  //           return -1;
-  //         }
-  //         if (nameA > nameB) {
-  //           return 1;
-  //         }
-  //         return 0;
-  //       }),
-  //     );
-  //     setLoading(false);
-  //   }
-  // }, [loading]);
 
   return {celebrities, loading};
 };

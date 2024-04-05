@@ -8,12 +8,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-
-export enum LikedState {
-  UNSET = 'Unset',
-  LIKED = 'Liked',
-  DISLIKED = 'Disliked',
-}
+import {LikedState} from '../types';
 
 const HeartIcon = ({likedState}: {likedState: LikedState}) => {
   const scale = useSharedValue(1);

@@ -41,7 +41,6 @@ const OpacityPressable: React.FC<OpacityPressableProps> = ({
 
   return (
     <AnimatedPressable
-      //   onPress={onPress}
       onPressIn={handleOnPressIn}
       onPressOut={handleOnPressOut}
       style={animatedStyle}

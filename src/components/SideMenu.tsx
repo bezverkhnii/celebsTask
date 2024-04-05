@@ -9,7 +9,7 @@ import Animated from 'react-native-reanimated';
 import {MultiSelect} from 'react-native-element-dropdown';
 import {FilterContext} from '../context/FilterContext';
 import {ScrollView} from 'react-native-gesture-handler';
-import {LikedState} from './HeartIcon';
+import {LikedState} from '../types';
 
 const SideMenu = ({isOpen}: {isOpen: boolean}) => {
   const {
@@ -28,8 +28,8 @@ const SideMenu = ({isOpen}: {isOpen: boolean}) => {
     likesFilter,
     setLikesFilter,
   } = useContext(FilterContext);
+  const menuWidth = useSharedValue(0);
 
-  /////
   const departmentValues = departmentTypes.map(type => ({
     label: type,
     value: type,
@@ -37,11 +37,11 @@ const SideMenu = ({isOpen}: {isOpen: boolean}) => {
 
   const genderValues = genderTypes.map(type => ({
     label:
-      type === 0
+      type === '0'
         ? 'Not specified'
-        : type === 1
+        : type === '1'
         ? 'Female'
-        : type === 2
+        : type === '2'
         ? 'Male'
         : 'Non-binary',
     value: type,
@@ -62,15 +62,13 @@ const SideMenu = ({isOpen}: {isOpen: boolean}) => {
     value: type,
   }));
 
-  /////
-  const menuWidth = useSharedValue(0);
   useEffect(() => {
     if (!isOpen) {
       menuWidth.value = withTiming(0);
     } else {
       menuWidth.value = withTiming(250);
     }
-  });
+  }, [isOpen, menuWidth]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -129,7 +127,7 @@ const SideMenu = ({isOpen}: {isOpen: boolean}) => {
           valueField="value"
           value={likesFilter}
           onChange={item => {
-            setLikesFilter(item);
+            setLikesFilter(item as LikedState[]);
           }}
         />
       </ScrollView>

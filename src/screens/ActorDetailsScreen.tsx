@@ -33,9 +33,9 @@ const SEPARATOR_WIDTH_BY_DESIGN = 12;
 const CARD_INACTIVE_WIDTH_BY_DESIGN = 256;
 const CARD_INACTIVE_WIDTH =
   CARD_INACTIVE_WIDTH_BY_DESIGN + SEPARATOR_WIDTH_BY_DESIGN;
-const CARD_INACTIVE_HEIGHT = 340;
+const CARD_INACTIVE_HEIGHT = 384;
 const CARD_ACTIVE_WIDTH = 300;
-const CARD_ACTIVE_HEIGHT = 380;
+const CARD_ACTIVE_HEIGHT = 450;
 const SCALE_X = CARD_INACTIVE_WIDTH / CARD_ACTIVE_WIDTH;
 const SCALE_Y = CARD_INACTIVE_HEIGHT / CARD_ACTIVE_HEIGHT;
 const PAGE_WIDTH = CARD_ACTIVE_WIDTH;
@@ -73,6 +73,10 @@ const ActorDetailsScreen = () => {
   const {setOptions} = useNavigation();
   const {params} = useRoute<NavigationProps['route']>();
   const [slideIdx, setSlideIdx] = useState(0);
+  const {width} = useWindowDimensions();
+  const contentOffset = useSharedValue(0);
+  const {bottom} = useSafeAreaInsets();
+
   const celeb = params.celebrity;
   const movies: IMovie[] = celeb.known_for.map((movie: IMovieFields) => ({
     movie: movie.name || movie.original_title || '',
@@ -87,10 +91,6 @@ const ActorDetailsScreen = () => {
       headerTitle: celeb.name,
     });
   }, [setOptions, celeb.name]);
-
-  // console.log(movies);
-  const {width} = useWindowDimensions();
-  const contentOffset = useSharedValue(0);
 
   const onScrollHandler = useAnimatedScrollHandler(
     {
@@ -111,9 +111,12 @@ const ActorDetailsScreen = () => {
     runOnJS(setSlideIdx)(slideIndex.value);
   });
 
-  const {bottom} = useSafeAreaInsets();
   return (
-    <ScrollView contentContainerStyle={{paddingBottom: bottom || 8}}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{
+        paddingBottom: bottom || 8,
+      }}>
       <Animated.ScrollView
         horizontal={true}
         showsHorizontalScrollIndicator={false}
@@ -133,6 +136,7 @@ const ActorDetailsScreen = () => {
                 priority: FastImage.priority.normal,
               }}
               style={styles.poster}
+              resizeMode="contain"
             />
           </Card>
         ))}
@@ -168,13 +172,17 @@ const ActorDetailsScreen = () => {
 export default ActorDetailsScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+  },
+
   profileSection: {
     padding: 10,
     flexDirection: 'row',
   },
   poster: {
-    width: 300,
-    height: 450,
+    width: CARD_ACTIVE_WIDTH,
+    height: CARD_ACTIVE_HEIGHT,
   },
 
   actorPhoto: {

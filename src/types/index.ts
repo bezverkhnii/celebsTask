@@ -1,10 +1,8 @@
-declare global {
-  namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
-  }
+export enum LikedState {
+  UNSET = 'Unset',
+  LIKED = 'Liked',
+  DISLIKED = 'Disliked',
 }
-import {Dispatch, SetStateAction} from 'react';
-import {LikedState} from '../components/HeartIcon';
 
 export type RootStackParamList = {
   CelebritiesList: undefined;
@@ -63,20 +61,26 @@ export interface ICelebrity {
 export interface IFilterContext {
   departmentFilter: string[];
   departmentTypes: string[];
-  setDepartmentFilter: Dispatch<SetStateAction<string[]>>;
+  setDepartmentFilter: (item: string[]) => void;
   genderFilter: string[];
-  genderTypes: number[];
-  setGenderFilter: Dispatch<SetStateAction<string[]>>;
+  genderTypes: string[];
+  setGenderFilter: (item: string[]) => void;
   mediaTypes: string[];
   mediaTypesFilter: string[];
-  setMediaTypesFilter: Dispatch<SetStateAction<string[]>>;
+  setMediaTypesFilter: (item: string[]) => void;
   originalLanguageTypes: string[];
   originalLanguageFilter: string[];
-  setOriginalLanguageFilter: Dispatch<SetStateAction<string[]>>;
+  setOriginalLanguageFilter: (item: string[]) => void;
   celebLikedState: ICelebLikedState;
   setLikedType: (celebID: number, type: LikedState) => void;
   likesFilter: LikedState[];
-  setLikesFilter: Dispatch<SetStateAction<string[]>>;
+  setLikesFilter: (item: LikedState[]) => void;
   filteredData: ICelebrity[];
   loading: boolean;
+}
+
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
 }

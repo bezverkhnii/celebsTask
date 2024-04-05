@@ -11,21 +11,18 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import HeartIcon, {LikedState} from './HeartIcon';
+import HeartIcon from './HeartIcon';
 import OpacityPressable from './OpacityPressable';
 import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
 import {FilterContext} from '../context/FilterContext';
-import {ICelebrity} from '../types';
+import {ICelebrity, LikedState} from '../types';
 
 const CelebCard = ({celeb}: {celeb: ICelebrity}) => {
   const {navigate} = useNavigation();
   const {celebLikedState, setLikedType} = useContext(FilterContext);
-
-  const likedState = useMemo(
-    () => celebLikedState[celeb.id] || LikedState.UNSET,
-    [celebLikedState, celeb.id],
-  );
+  const position = useSharedValue(0);
+  const likedState = celebLikedState[celeb.id] || LikedState.UNSET;
 
   const handleDislike = () => {
     if (likedState === LikedState.DISLIKED) {
@@ -43,7 +40,6 @@ const CelebCard = ({celeb}: {celeb: ICelebrity}) => {
     }
   };
 
-  const position = useSharedValue(0);
   const dislikeGesture = Gesture.Fling()
     .direction(Directions.LEFT)
     .onStart(() => {
@@ -104,7 +100,7 @@ const CelebCard = ({celeb}: {celeb: ICelebrity}) => {
             <Text style={styles.name}>{celeb.name}</Text>
             <Text>Department: {celeb.known_for_department}</Text>
           </View>
-          <View style={{paddingRight: 30}}>
+          <View style={styles.icon}>
             <HeartIcon likedState={likedState} />
           </View>
         </Animated.View>
@@ -135,5 +131,9 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
+  },
+
+  icon: {
+    paddingRight: 30,
   },
 });
