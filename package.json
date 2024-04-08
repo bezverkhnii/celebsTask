@@ -11,11 +11,11 @@
     "ts": "tsc"
   },
   "dependencies": {
-    "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/stack": "^6.3.29",
     "@shopify/flash-list": "^1.6.4",
     "axios": "^1.6.8",
+    "lodash": "^4.17.21",
     "react": "18.2.0",
     "react-native": "0.73.6",
     "react-native-element-dropdown": "^2.10.4",
@@ -33,6 +33,7 @@
     "@react-native/eslint-config": "0.73.2",
     "@react-native/metro-config": "0.73.5",
     "@react-native/typescript-config": "0.73.1",
+    "@types/lodash": "^4.17.0",
     "@types/react": "^18.2.6",
     "@types/react-test-renderer": "^18.0.0",
     "babel-jest": "^29.6.3",

@@ -51,37 +51,42 @@ export const FilterProvider = ({children}: {children: ReactNode}) => {
   }, []);
 
   useEffect(() => {
-    const departments = new Set<string>();
-    const genders = new Set<string>();
-    const originalLanguages = new Set<string>();
-    const mediaTypesSet = new Set<string>();
+    if (!loading) {
+      const departments = new Set<string>();
+      const genders = new Set<string>();
+      const originalLanguages = new Set<string>();
+      const mediaTypesSet = new Set<string>();
 
-    celebrities.forEach(celeb => {
-      if (celeb.known_for_department) {
-        departments.add(celeb.known_for_department);
-      }
+      celebrities.forEach(celeb => {
+        if (celeb.known_for_department) {
+          departments.add(celeb.known_for_department);
+        }
 
-      if (celeb.gender) {
-        genders.add(`${celeb.gender}`);
-      }
+        if (celeb.gender) {
+          genders.add(`${celeb.gender}`);
+        }
 
-      (celeb.known_for || []).forEach(movie => {
-        mediaTypesSet.add(movie.media_type);
-        originalLanguages.add(movie.original_language);
+        (celeb.known_for || []).forEach(movie => {
+          mediaTypesSet.add(movie.media_type);
+          originalLanguages.add(movie.original_language);
+        });
       });
-    });
 
-    setDepartmentTypes(Array.from(departments));
-    setDepartmentFilter(Array.from(departments));
-    setGenderTypes(Array.from(genders));
-    setGenderFilter(Array.from(genders));
-    setMediaTypes(Array.from(mediaTypesSet));
-    setMediaTypesFilter(Array.from(mediaTypesSet));
-    setOriginalLanguageTypes(Array.from(originalLanguages));
-    setOriginalLanguageFilter(Array.from(originalLanguages));
-  }, [celebrities]);
+      setDepartmentTypes(Array.from(departments));
+      setDepartmentFilter(Array.from(departments));
+      setGenderTypes(Array.from(genders));
+      setGenderFilter(Array.from(genders));
+      setMediaTypes(Array.from(mediaTypesSet));
+      setMediaTypesFilter(Array.from(mediaTypesSet));
+      setOriginalLanguageTypes(Array.from(originalLanguages));
+      setOriginalLanguageFilter(Array.from(originalLanguages));
+    }
+  }, [celebrities, loading]);
 
   const filteredData = useMemo(() => {
+    if (loading) {
+      return [];
+    }
     return celebrities.filter(celeb => {
       const likedState =
         (celebLikedState as ICelebLikedState)[celeb.id] || LikedState.UNSET;
@@ -105,6 +110,7 @@ export const FilterProvider = ({children}: {children: ReactNode}) => {
     originalLanguageFilter,
     celebLikedState,
     likesFilter,
+    loading,
   ]);
 
   const shared = {

@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react';
 import {getMoviesByPage} from '../api/moviedbAPI';
 import {ICelebrity} from '../types';
+import {uniqBy} from 'lodash';
 
 export const useCelebrities = () => {
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,7 @@ export const useCelebrities = () => {
       })();
     } else {
       setCelebrities(prevCelebrities => {
-        return [...prevCelebrities].sort((a, b) => {
+        return uniqBy(prevCelebrities, 'id').sort((a, b) => {
           const nameA = a.name.toUpperCase();
           const nameB = b.name.toUpperCase();
           if (nameA < nameB) {
